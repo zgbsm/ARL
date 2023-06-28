@@ -46,6 +46,9 @@ class FetchSite(BaseThread):
         _, hostname, _ = get_host(site)
 
         conn = utils.http_req(site, timeout=self.http_timeout)
+        body = ''
+        if "Content-Type" in conn.headers and conn.headers.get('Content-Type') == 'text/html':
+            body = conn.text
         item = {
             "site": site,
             "hostname": hostname,
@@ -53,6 +56,7 @@ class FetchSite(BaseThread):
             "title": utils.get_title(conn.content),
             "status": conn.status_code,
             "headers": utils.get_headers(conn),
+            "body": body,
             "http_server":  conn.headers.get("Server", ""),
             "body_length": len(conn.content),
             "finger": [],
